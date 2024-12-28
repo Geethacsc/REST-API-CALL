@@ -10,6 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name="address-service" ,url = "http://localhost:8081/address-service/api")
 public interface RestApiCallUsingOpenFeign {
 
-    @GetMapping("/getAddress/{id}")
-    public ResponseEntity<AddressResponse> getAddressById(@PathVariable("id") int id);
+    @GetMapping("/getAddress/{addr_id}")
+    public ResponseEntity<AddressResponse> getAddressByEmployeeId(@PathVariable("addr_id") int id);
 }

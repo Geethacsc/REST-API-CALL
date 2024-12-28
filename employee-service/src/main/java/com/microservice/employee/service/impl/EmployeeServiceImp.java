@@ -75,7 +75,7 @@ public class EmployeeServiceImp implements EmployeeService{
 		 * REST API Call Using OPEN FEIGN -Netflix product
 		 */
 
-		AddressResponse address=addressClient.getAddressById(id).getBody();
+		AddressResponse address=addressClient.getAddressByEmployeeId(id).getBody();
 
 		System.out.println("after rest api call");
 		employeeResponse.setAddress(address);
