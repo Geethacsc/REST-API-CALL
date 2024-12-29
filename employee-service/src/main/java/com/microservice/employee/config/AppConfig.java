@@ -19,10 +19,10 @@ public class AppConfig {
 		return new ModelMapper();
 	}
 
-	@Bean
-	RestTemplate restTemplate(){
-		return new RestTemplate();
-	}
+//	@Bean
+//	RestTemplate restTemplate(){
+//		return new RestTemplate();
+//	}
 
 	@Bean
 	WebClient webClient(){

@@ -7,6 +7,10 @@ import com.microservice.employee.response.EmployeeResponse;
 @Service
 public interface EmployeeService {
 
-	EmployeeResponse getEmployeeDetails(int id);
+	EmployeeResponse getEmployeeDetailsUsingRestTemplate(int id);
+
+	EmployeeResponse getEmployeeDetailsUsingWebClient(int id);
+
+	EmployeeResponse getEmployeeDetailsUsingOpenFeign(int id);
 
 }

@@ -2,7 +2,7 @@ package com.microservice.employee.service.impl;
 
 import java.util.Optional;
 
-import com.microservice.employee.client.RestApiCallUsingOpenFeign;
+import com.microservice.employee.client.AddressClient;
 import com.microservice.employee.response.AddressResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,6 @@ import com.microservice.employee.response.EmployeeResponse;
 import com.microservice.employee.service.EmployeeService;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 /*
 REST API CALL USING:
@@ -34,51 +33,51 @@ public class EmployeeServiceImp implements EmployeeService{
 	private ModelMapper mapper;
 
 	//@Autowired
-	//private RestTemplate restApiCall;
+	private RestTemplate restTemplate;
 
 	@Autowired
 	private WebClient webClient;
 
-	@Value("${microservice.address.base.url}")
-	private String addressBaseUrl;
+//	@Value("${microservice.address.base.url}")
+//	private String addressBaseUrl;
 
 	@Autowired
-	private RestApiCallUsingOpenFeign addressClient;
+	private AddressClient addressClient;
 
-//	public EmployeeServiceImp(@Value("${microservice.address.base.url}") String addressBaseUrl,RestTemplateBuilder builder) {
-//		this.restApiCall = builder																									.rootUri(addressBaseUrl).build();
-//	}
+	public EmployeeServiceImp(@Value("${microservice.address.base.url}") String addressBaseUrl,RestTemplateBuilder builder) {
+		this.restTemplate = builder.rootUri(addressBaseUrl).build();
+	}
 
 
 	public EmployeeResponse getEmployeeDetails(int id) {
 		Optional<Employee> employee = repo.findById(id);
-		EmployeeResponse employeeResponse= mapper.map(employee, EmployeeResponse.class);
+		return mapper.map(employee, EmployeeResponse.class);
+	}
 
-		/*REST API CALL USING RESTTemplate
-		 * RESTTemplate is a blocking call in Nature
-		 */
-		//System.out.println("url: "+baseUrl);
-		//AddressResponse address=restApiCall.getForObject(baseUrl+"/getAddress/{id}", AddressResponse.class, id);
-
-		//AddressResponse address=restApiCall.getForObject("/getAddress/{id}", AddressResponse.class, id);
-
-		/**
-		 * REST API CALL(calling external service) USING WEB CLIENT
-		 * Web Client is non blocking in nature
-		 * We can make Web Client blocking by calling block() method
-		**/
-//		Mono<AddressResponse> monoAddress=webClient.get().uri("/getAddress/"+id).retrieve().bodyToMono(AddressResponse.class);
-//
-//		AddressResponse address= monoAddress.block();//makes the web client a blocking call
-
-		/**
-		 * REST API Call Using OPEN FEIGN -Netflix product
-		 */
-
-		AddressResponse address=addressClient.getAddressByEmployeeId(id).getBody();
-
-		System.out.println("after rest api call");
+	@Override
+	public EmployeeResponse getEmployeeDetailsUsingRestTemplate(int id) {
+		System.out.println("REST API Call to Address Service Using RESTTemplate");
+		EmployeeResponse employeeResponse=getEmployeeDetails(id);
+		AddressResponse address= restTemplate.getForObject("/getAddress/{id}",AddressResponse.class,id);
 		employeeResponse.setAddress(address);
 		return employeeResponse;
+	}
+
+	@Override
+	public EmployeeResponse getEmployeeDetailsUsingWebClient(int id) {
+		EmployeeResponse employeeResponse=getEmployeeDetails(id);
+//		Mono<AddressResponse> monoResponse=webClient.get().uri("getAddress/{id}").retrieve().bodyToMono(AddressResponse.class);
+//		AddressResponse address= monoResponse.block();
+		AddressResponse address=webClient.get().uri("/getAddress/"+id).retrieve().bodyToMono(AddressResponse.class).block();
+		employeeResponse.setAddress(address);
+		return employeeResponse;
+	}
+
+	@Override
+	public EmployeeResponse getEmployeeDetailsUsingOpenFeign(int id) {
+		EmployeeResponse employee=getEmployeeDetails(id);
+		AddressResponse address=addressClient.getAddressByEmployeeId(id).getBody();
+		employee.setAddress(address);
+		return employee;
 	}
 }

@@ -73,6 +73,7 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
 		</dependency>
+
 	</dependencies>
 	<!--Since spring cloud is not a part of spring boot project we need to mention the version of spring cloud-->
 	<dependencyManagement>

@@ -19,9 +19,24 @@ public class EmployeeController {
 	@Autowired
 	private EmployeeService service;
 
-	@GetMapping("/get-employee/{Employee_id}")
-	public ResponseEntity<EmployeeResponse> getEmployee(@PathVariable("Employee_id") int id) {
+	//REST API call to Address service using RESTTemplate
+	@GetMapping("rest-template/get-employee/{Employee_id}")
+	public ResponseEntity<EmployeeResponse> getEmployee1(@PathVariable("Employee_id") int id) {
 		//return new ResponseEntity<EmployeeResponse>(service.getEmployeeDetails(id), HttpStatus.OK);
-		return ResponseEntity.status(HttpStatus.OK).body(service.getEmployeeDetails(id));
+		return ResponseEntity.status(HttpStatus.OK).body(service.getEmployeeDetailsUsingRestTemplate(id));
 	}
+
+	//REST API call to Address Service using WEB FLUX
+	@GetMapping("web-client/get-employee/{Employee_id}")
+	public ResponseEntity<EmployeeResponse> getEmployee2(@PathVariable("Employee_id") int id) {
+		//return new ResponseEntity<EmployeeResponse>(service.getEmployeeDetails(id), HttpStatus.OK);
+		return ResponseEntity.status(HttpStatus.OK).body(service.getEmployeeDetailsUsingWebClient(id));
+	}
+
+	@GetMapping("open-feign/get-employee/{Employee_id}")
+	public ResponseEntity<EmployeeResponse> getEmployee3(@PathVariable("Employee_id") int id) {
+		//return new ResponseEntity<EmployeeResponse>(service.getEmployeeDetails(id), HttpStatus.OK);
+		return ResponseEntity.status(HttpStatus.OK).body(service.getEmployeeDetailsUsingOpenFeign(id));
+	}
+
 }
